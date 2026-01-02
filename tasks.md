@@ -1,11 +1,16 @@
-- user details page.
-- use of all types of form fields
-- all fields visible in viewport.
-- reusable form component
+-   vue in detail
 
-### NEW
-- config file for all form attributes. loop on that array no separate input components. one component attribute change.
+> component lifecycle, computed, named-slots, composibles, global state management
 
-- new fields: only date, date time, only time.
+`provide`, `inject`
 
-- git push.
+-   vue => list view
+-   vue => filtered view implementation.
+
+### new
+- form layout
+- form attributes
+- details layout
+- pagination
+- explore crm 
+- the form of ui will be same for all modules.

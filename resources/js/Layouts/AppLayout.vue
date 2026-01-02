@@ -5,7 +5,7 @@ import { Toaster } from '@/Components/ui/sonner'
 import { toast } from 'vue-sonner'
 import 'vue-sonner/style.css'
 import { usePage } from '@inertiajs/vue3'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 
 const page = usePage()
 
@@ -18,6 +18,8 @@ watch(
     },
     { deep: true }
 )
+
+const currentPath = computed(() => page.url)
 </script>
 
 <template>
@@ -29,16 +31,25 @@ watch(
                         logo
                     </Link>
 
-                    <Link href="/users" class="text-sm text-muted-foreground hover:text-foreground transition">
+                    <Link href="/users" class="text-sm transition pb-1" :class="currentPath.startsWith('/users')
+                        ? 'text-foreground border-b-2 border-foreground'
+                        : 'text-muted-foreground hover:text-foreground'">
                         users
                     </Link>
+
+                    <Link href="/leads" class="text-sm transition pb-1" :class="currentPath.startsWith('/leads')
+                        ? 'text-foreground border-b-2 border-foreground'
+                        : 'text-muted-foreground hover:text-foreground'">
+                        leads
+                    </Link>
+
                 </div>
 
                 <ThemeToggle />
             </div>
         </header>
 
-        <main class="p-6">
+        <main>
             <Toaster position="top-center" />
             <slot />
         </main>
