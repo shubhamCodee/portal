@@ -7,24 +7,34 @@ use App\Http\Requests\UpdateLeadRequest;
 use App\Repositories\Interfaces\LeadRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Lead;
 
 class LeadController extends Controller
 {
-    public function __construct(
-        protected LeadRepositoryInterface $leadRepository
-    ) {}
+    protected LeadRepositoryInterface $leadRepository;
+
+    public function __construct(LeadRepositoryInterface $leadRepository)
+    {
+        $this->leadRepository = $leadRepository;
+    }
 
     public function index(Request $request)
     {
-        $leads = $this->leadRepository->getAllLeads(
-            $request->only(['status', 'source'])
+        $filters = $request->only([
+            'status',
+            'source',
+        ]);
+
+        $leads = $this->leadRepository->getPaginatedLeads(
+            $filters,
+            15
         );
 
         return Inertia::render('Leads/Index', [
             'leads' => $leads,
+            'filters' => $filters,
         ]);
     }
-
 
     public function create()
     {
@@ -37,45 +47,43 @@ class LeadController extends Controller
             $request->validated()
         );
 
-        return redirect()->route('leads.index');
+        return redirect()
+            ->route('leads.index')
+            ->with('success', 'Lead created successfully.');
     }
 
-    public function show(int $id)
+    public function show(Lead $lead)
     {
-        $lead = $this->leadRepository->getLeadById($id);
-
         return Inertia::render('Leads/Show', [
             'lead' => $lead,
         ]);
     }
 
-    public function edit(int $id)
+    public function edit(Lead $lead)
     {
-        $lead = $this->leadRepository->getLeadById($id);
-
         return Inertia::render('Leads/Edit', [
             'lead' => $lead,
         ]);
     }
 
-    public function update(UpdateLeadRequest $request, int $id)
+    public function update(UpdateLeadRequest $request, Lead $lead)
     {
-        $lead = $this->leadRepository->getLeadById($id);
-
         $this->leadRepository->updateLead(
             $lead,
             $request->validated()
         );
 
-        return redirect()->route('leads.index');
+        return redirect()
+            ->route('leads.index')
+            ->with('success', 'Lead updated successfully.');
     }
 
-    public function destroy(int $id)
+    public function destroy(Lead $lead)
     {
-        $lead = $this->leadRepository->getLeadById($id);
-
         $this->leadRepository->deleteLead($lead);
 
-        return redirect()->route('leads.index');
+        return redirect()
+            ->route('leads.index')
+            ->with('success', 'Lead deleted successfully.');
     }
 }

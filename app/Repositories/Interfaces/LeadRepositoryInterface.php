@@ -3,11 +3,14 @@
 namespace App\Repositories\Interfaces;
 
 use App\Models\Lead;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface LeadRepositoryInterface
 {
-    public function getAllLeads(array $filters = []): Collection;
+    public function getPaginatedLeads(
+        array $filters = [],
+        int $perPage = 15
+    ): LengthAwarePaginator;
 
     public function getLeadById(int $id): ?Lead;
 

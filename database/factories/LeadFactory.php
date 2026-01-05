@@ -2,27 +2,28 @@
 
 namespace Database\Factories;
 
+use App\Models\Lead;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Lead>
- */
 class LeadFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Lead::class;
+
     public function definition(): array
     {
         return [
+            // Core
             'name' => $this->faker->name(),
+            'company_name' => $this->faker->company(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
 
-            'email' => $this->faker->optional()->safeEmail(),
+            // Contact
+            'email' => $this->faker->unique()->safeEmail(),
+            'phone' => $this->faker->numerify('##########'),
+            'website' => $this->faker->url(),
 
-            'phone' => $this->faker->optional()->phoneNumber(),
-
+            // Status & source
             'status' => $this->faker->randomElement([
                 'new',
                 'contacted',
@@ -30,28 +31,49 @@ class LeadFactory extends Factory
                 'converted',
                 'lost',
             ]),
-
-            'source' => $this->faker->optional()->randomElement([
+            'source' => $this->faker->randomElement([
                 'website',
                 'referral',
                 'cold-call',
                 'ads',
             ]),
 
-            'tags' => $this->faker->optional()->randomElements(
+            // Organization
+            'department' => $this->faker->randomElement([
+                'Sales',
+                'Marketing',
+                'Operations',
+                'Finance',
+                'HR',
+            ]),
+            'designation' => $this->faker->jobTitle(),
+
+            // Financial
+            'lead_cost' => $this->faker->randomFloat(2, 100, 5000),
+            'total_lead_cost' => $this->faker->randomFloat(2, 1000, 20000),
+            'currency' => 'INR',
+            'percentage' => $this->faker->randomFloat(2, 1, 100),
+
+            // Tags (always at least one)
+            'tags' => $this->faker->randomElements(
                 ['hot', 'enterprise', 'follow-up'],
-                rand(1, 3)
+                $this->faker->numberBetween(1, 3)
             ),
 
-            'follow_up_date' => $this->faker->optional()->dateTimeBetween('now', '+15 days'),
+            // Dates & follow-ups (always filled)
+            'follow_up_date' => $this->faker->dateTimeBetween('now', '+15 days')->format('Y-m-d'),
+            'follow_up_time' => $this->faker->time('H:i'),
+            'meeting_at' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'follow_up_at' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'closed_date' => $this->faker->dateTimeBetween('+1 month', '+3 months')->format('Y-m-d'),
 
-            'follow_up_time' => $this->faker->optional()->time(),
+            // Location
+            'city' => $this->faker->city(),
+            'address' => $this->faker->streetAddress(),
 
-            'meeting_at' => $this->faker->optional()->dateTimeBetween('-5 days', '+10 days'),
-
-            'notes' => $this->faker->optional()->sentence(10),
-
-            'is_active' => $this->faker->boolean(80),
+            // Notes & state
+            'notes' => $this->faker->paragraph(3),
+            'is_active' => true,
         ];
     }
 }

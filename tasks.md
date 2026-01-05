@@ -1,16 +1,23 @@
--   vue in detail
+### old
 
-> component lifecycle, computed, named-slots, composibles, global state management
+-   form layout
+-   form attributes
+-   more scalable form schemap
+-   details layout
+-   pagination
+-   explore crm
+-   the form of ui will be same for all modules.
 
-`provide`, `inject`
+### notes
 
--   vue => list view
--   vue => filtered view implementation.
+1. in sangam crm there are only two columns.
 
 ### new
-- form layout
-- form attributes
-- details layout
-- pagination
-- explore crm 
-- the form of ui will be same for all modules.
+
+-   laravel debugbar
+-   user relationship
+-   new one-to-many relationship. (new module)
+-   pagination with numbers
+-   search bar
+-   clicking on user will open user profile page.
+-   loading related data.

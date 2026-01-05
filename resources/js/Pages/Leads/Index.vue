@@ -3,7 +3,7 @@ import { ref, watch } from "vue";
 import { Link, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Button } from "@/Components/ui/button";
-import { Plus, Pencil, Trash2 } from "lucide-vue-next";
+import { Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-vue-next";
 import {
     Table,
     TableBody,
@@ -20,21 +20,22 @@ import {
     SelectItem,
 } from "@/Components/ui/select";
 import { route } from "ziggy-js";
-import { formatDate } from "../../lib/date.js";
+import { formatDate } from "@/lib/date";
 
-defineProps({
-    leads: Array,
+const props = defineProps({
+    leads: Object,
+    filters: Object,
 });
 
-const status = ref("");
-const source = ref("");
+const status = ref(props.filters?.status ?? "");
+const source = ref(props.filters?.source ?? "");
 
 watch([status, source], ([newStatus, newSource]) => {
     router.get(
         route("leads.index"),
         {
-            status: newStatus,
-            source: newSource,
+            status: newStatus || undefined,
+            source: newSource || undefined,
         },
         {
             preserveState: true,
@@ -47,13 +48,22 @@ watch([status, source], ([newStatus, newSource]) => {
 const goToShow = (id) => {
     router.visit(route("leads.show", id));
 };
-</script>
 
+const goToPage = (url) => {
+    if (!url) return;
+
+    router.visit(url, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+</script>
 
 <template>
     <AppLayout>
-        <div class="rounded-lg border bg-card p-4">
-            <div class="flex items-center justify-between mb-4">
+        <div class="rounded-lg border bg-card p-4 space-y-4">
+
+            <div class="flex items-center justify-between">
                 <h1 class="text-lg font-semibold">Leads</h1>
 
                 <Link :href="route('leads.create')">
@@ -64,12 +74,11 @@ const goToShow = (id) => {
                 </Link>
             </div>
 
-            <div class="flex gap-4 mb-4">
+            <div class="flex gap-4">
                 <Select v-model="status">
                     <SelectTrigger class="w-[220px]">
-                        <SelectValue placeholder="Select Status" />
+                        <SelectValue placeholder="Filter by Status" />
                     </SelectTrigger>
-
                     <SelectContent>
                         <SelectItem value="new">New</SelectItem>
                         <SelectItem value="contacted">Contacted</SelectItem>
@@ -81,9 +90,8 @@ const goToShow = (id) => {
 
                 <Select v-model="source">
                     <SelectTrigger class="w-[220px]">
-                        <SelectValue placeholder="Select Source" />
+                        <SelectValue placeholder="Filter by Source" />
                     </SelectTrigger>
-
                     <SelectContent>
                         <SelectItem value="website">Website</SelectItem>
                         <SelectItem value="referral">Referral</SelectItem>
@@ -92,7 +100,6 @@ const goToShow = (id) => {
                     </SelectContent>
                 </Select>
             </div>
-
 
             <Table>
                 <TableHeader>
@@ -106,7 +113,7 @@ const goToShow = (id) => {
                 </TableHeader>
 
                 <TableBody>
-                    <TableRow v-if="leads.length === 0">
+                    <TableRow v-if="leads.data.length === 0">
                         <TableCell colspan="5" class="text-center py-12 text-muted-foreground">
                             <div class="flex flex-col items-center gap-3">
                                 <p class="text-sm">No leads found</p>
@@ -121,7 +128,7 @@ const goToShow = (id) => {
                         </TableCell>
                     </TableRow>
 
-                    <TableRow v-else v-for="lead in leads" :key="lead.id" class="cursor-pointer hover:bg-muted/50"
+                    <TableRow v-else v-for="lead in leads.data" :key="lead.id" class="cursor-pointer hover:bg-muted/50"
                         @click="goToShow(lead.id)">
                         <TableCell class="font-medium">
                             {{ lead.name }}
@@ -136,7 +143,7 @@ const goToShow = (id) => {
                         </TableCell>
 
                         <TableCell>
-                            {{ formatDate(lead.follow_up_date ?? "-") }}
+                            {{ lead.follow_up_date ? formatDate(lead.follow_up_date) : "-" }}
                         </TableCell>
 
                         <TableCell class="text-right flex justify-end gap-2">
@@ -156,6 +163,31 @@ const goToShow = (id) => {
                     </TableRow>
                 </TableBody>
             </Table>
+
+            <div v-if="leads.total > leads.per_page" class="flex items-center justify-between pt-2">
+                <p class="text-sm text-muted-foreground">
+                    Showing
+                    <span class="font-medium">{{ leads.from }}</span>
+                    to
+                    <span class="font-medium">{{ leads.to }}</span>
+                    of
+                    <span class="font-medium">{{ leads.total }}</span>
+                    results
+                </p>
+
+                <div class="flex gap-2">
+                    <Button variant="outline" size="icon" :disabled="!leads.prev_page_url"
+                        @click="goToPage(leads.prev_page_url)">
+                        <ChevronLeft class="h-4 w-4" />
+                    </Button>
+
+                    <Button variant="outline" size="icon" :disabled="!leads.next_page_url"
+                        @click="goToPage(leads.next_page_url)">
+                        <ChevronRight class="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+
         </div>
     </AppLayout>
 </template>

@@ -4,12 +4,14 @@ namespace App\Repositories;
 
 use App\Models\Lead;
 use App\Repositories\Interfaces\LeadRepositoryInterface;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class LeadRepository implements LeadRepositoryInterface
 {
-    public function getAllLeads(array $filters = []): Collection
-    {
+    public function getPaginatedLeads(
+        array $filters = [],
+        int $perPage = 15
+    ): LengthAwarePaginator {
         return Lead::query()
             ->when(
                 !empty($filters['status']),
@@ -19,7 +21,13 @@ class LeadRepository implements LeadRepositoryInterface
                 !empty($filters['source']),
                 fn($q) => $q->where('source', $filters['source'])
             )
-            ->get();
+            ->when(
+                !empty($filters['is_active']),
+                fn($q) => $q->where('is_active', $filters['is_active'])
+            )
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function getLeadById(int $id): ?Lead
