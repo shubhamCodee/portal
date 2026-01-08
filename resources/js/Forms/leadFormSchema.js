@@ -76,13 +76,15 @@ export const leadFormSchema = [
         },
     },
     {
-        name: "assigned_to",
+        name: "assigned_to_user_id",
         label: "Assigned To",
-        type: "text",
+        type: "select",
         props: {
-            disabled: true,
+            options: [],
+            placeholder: "Select user",
         },
     },
+
     {
         name: "opportunity_name",
         label: "Opportunity Name",

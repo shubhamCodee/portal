@@ -24,6 +24,7 @@ class Lead extends Model
         'company_name',
         'first_name',
         'last_name',
+        'assigned_to_user_id',
         'department',
         'designation',
         'lead_cost',
@@ -52,4 +53,14 @@ class Lead extends Model
 
         'is_active' => 'boolean',
     ];
+
+    public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_to_user_id');
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

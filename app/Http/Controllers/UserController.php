@@ -24,10 +24,15 @@ class UserController extends Controller
 
     public function show(int $id): Response
     {
+        $user = $this->userRepository->findById($id);
+
+        $user->load('assignedLeads');
+
         return Inertia::render('Users/Show', [
-            'user' => $this->userRepository->findById($id),
+            'user' => $user,
         ]);
     }
+
 
     public function create(): Response
     {

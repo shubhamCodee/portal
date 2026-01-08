@@ -8,6 +8,7 @@ use App\Repositories\Interfaces\LeadRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Lead;
+use App\Models\User;
 
 class LeadController extends Controller
 {
@@ -38,33 +39,64 @@ class LeadController extends Controller
 
     public function create()
     {
-        return Inertia::render('Leads/Create');
+        $users = User::query()
+            ->where('is_active', true)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Leads/Create', [
+            'users' => $users,
+        ]);
     }
+
 
     public function store(StoreLeadRequest $request)
     {
-        $this->leadRepository->createLead(
-            $request->validated()
-        );
+        $data = $request->validated();
+
+        if (empty($data['name'])) {
+            $data['name'] = trim(
+                ($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '')
+            );
+        }
+
+        $this->leadRepository->createLead($data);
 
         return redirect()
             ->route('leads.index')
             ->with('success', 'Lead created successfully.');
     }
 
+
     public function show(Lead $lead)
     {
+        $lead->load([
+            'assignedUser',
+            'activities.assignedUser',
+        ]);
+
         return Inertia::render('Leads/Show', [
             'lead' => $lead,
         ]);
     }
 
+
+
     public function edit(Lead $lead)
     {
+        $users = User::query()
+            ->where('is_active', true)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('Leads/Edit', [
             'lead' => $lead,
+            'users' => $users,
         ]);
     }
+
 
     public function update(UpdateLeadRequest $request, Lead $lead)
     {

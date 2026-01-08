@@ -175,17 +175,29 @@ const goToPage = (url) => {
                     results
                 </p>
 
-                <div class="flex gap-2">
-                    <Button variant="outline" size="icon" :disabled="!leads.prev_page_url"
+                <div class="flex items-center gap-2 rounded-lg bg-muted/40 p-1">
+                    <Button variant="ghost" size="icon" :disabled="!leads.prev_page_url"
                         @click="goToPage(leads.prev_page_url)">
                         <ChevronLeft class="h-4 w-4" />
                     </Button>
 
-                    <Button variant="outline" size="icon" :disabled="!leads.next_page_url"
+                    <div class="flex gap-1">
+                        <template v-for="link in leads.links" :key="link?.label">
+                            <Button v-if="link && link.label && !isNaN(link.label)" size="icon"
+                                :variant="link.active ? 'default' : 'ghost'" :class="link.active
+                                    ? 'pointer-events-none shadow-sm'
+                                    : 'hover:bg-muted'" @click="!link.active && goToPage(link.url)">
+                                {{ link.label }}
+                            </Button>
+                        </template>
+                    </div>
+
+                    <Button variant="ghost" size="icon" :disabled="!leads.next_page_url"
                         @click="goToPage(leads.next_page_url)">
                         <ChevronRight class="h-4 w-4" />
                     </Button>
                 </div>
+
             </div>
 
         </div>

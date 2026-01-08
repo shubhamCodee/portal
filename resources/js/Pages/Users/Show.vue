@@ -15,6 +15,7 @@ defineProps({
     <AppLayout>
         <div class="max-w-4xl mx-auto space-y-6">
 
+            <!-- HEADER -->
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold">User Details</h1>
 
@@ -29,13 +30,13 @@ defineProps({
                 </div>
             </div>
 
+            <!-- USER INFO -->
             <Card>
                 <CardHeader>
                     <CardTitle>{{ user.name }}</CardTitle>
                 </CardHeader>
 
                 <CardContent class="grid grid-cols-2 gap-6">
-
                     <div>
                         <p class="text-sm text-muted-foreground">Email</p>
                         <p>{{ user.email }}</p>
@@ -81,11 +82,42 @@ defineProps({
                         <p class="text-sm text-muted-foreground">Bio</p>
                         <p>{{ user.bio || '-' }}</p>
                     </div>
+                </CardContent>
+            </Card>
 
+            <!-- ✅ ASSIGNED LEADS -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Assigned Leads</CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                    <div v-if="user.assigned_leads.length === 0" class="text-sm text-muted-foreground">
+                        No leads assigned to this user.
+                    </div>
+
+                    <div v-else class="space-y-3">
+                        <div v-for="lead in user.assigned_leads" :key="lead.id"
+                            class="flex items-center justify-between rounded-md border p-3 hover:bg-muted/40 transition">
+                            <div>
+                                <p class="font-medium">
+                                    {{ lead.name }}
+                                </p>
+                                <p class="text-xs text-muted-foreground capitalize">
+                                    {{ lead.status }}
+                                </p>
+                            </div>
+
+                            <Link :href="route('leads.show', lead.id)">
+                                <Button size="sm" variant="outline">
+                                    View
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
         </div>
     </AppLayout>
-
 </template>

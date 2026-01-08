@@ -14,7 +14,7 @@ class StoreLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
@@ -25,6 +25,8 @@ class StoreLeadRequest extends FormRequest
 
             'status' => ['required', 'string', 'max:255'],
             'source' => ['nullable', 'string', 'max:255'],
+
+            'assigned_to_user_id' => ['nullable', 'exists:users,id'],
 
             'department' => ['nullable', 'string', 'max:255'],
             'designation' => ['nullable', 'string', 'max:255'],

@@ -52,4 +52,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function assignedLeads()
+    {
+        return $this->hasMany(Lead::class, 'assigned_to_user_id');
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class, 'assigned_to_user_id');
+    }
 }
